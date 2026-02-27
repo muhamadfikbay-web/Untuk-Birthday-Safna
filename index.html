@@ -112,8 +112,14 @@ z-index:10;
 
 #endingPhoto img{
 width:100%;
-height:80%;
+height:100svh;
 object-fit:cover;
+animation:zoomIn 8s ease-in-out forwards;
+}
+
+@keyframes zoomIn{
+from{transform:scale(1)}
+to{transform:scale(1.08)}
 }
 
 #toastMsg{
@@ -355,4 +361,5 @@ setTimeout(()=>{toast.style.display="none";},1500);
 
 </body>
 </html>
+
 
