@@ -110,11 +110,22 @@ align-items:center;
 z-index:10;
 }
 
-#endingPhoto img{
+#endingPhoto{
+display:none;
+position:fixed;
+top:0;
+left:0;
 width:100%;
 height:100svh;
-object-fit:cover;
-animation:zoomIn 8s ease-in-out forwards;
+background:black;
+backdrop-filter:blur(8px);
+color:white;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:10;
+gap:20px;
+padding:20px;
 }
 
 @keyframes zoomIn{
@@ -361,6 +372,7 @@ setTimeout(()=>{toast.style.display="none";},1500);
 
 </body>
 </html>
+
 
 
 
