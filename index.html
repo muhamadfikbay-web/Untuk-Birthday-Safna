@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Safna 🤍</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+font-family:sans-serif;
+background:linear-gradient(135deg,#ffdde1,#ee9ca7);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+overflow:hidden;
+}
+
+/* SECTION */
+section{
+display:none;
+width:100%;
+max-width:420px;
+height:100vh;
+padding:30px 20px;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:18px;
+}
+
+#passwordPage{display:flex;}
+
+input{
+width:100%;
+max-width:250px;
+padding:12px;
+border-radius:12px;
+border:none;
+text-align:center;
+font-size:16px;
+}
+
+button{
+width:100%;
+max-width:220px;
+padding:12px;
+border-radius:25px;
+border:none;
+background:#ff4d6d;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+#loadingBar{
+width:100%;
+height:20px;
+background:white;
+border-radius:20px;
+overflow:hidden;
+}
+
+#progress{
+height:100%;
+width:0%;
+background:#ff4d6d;
+}
+
+/* GAME */
+#gamePage{
+position:relative;
+}
+
+#finalHeart{
+position:absolute;
+width:95px;
+height:95px;
+border-radius:50%;
+object-fit:cover;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+@keyframes shake{
+0%{transform:rotate(0);}
+25%{transform:rotate(-10deg);}
+50%{transform:rotate(10deg);}
+75%{transform:rotate(-10deg);}
+100%{transform:rotate(0);}
+}
+
+.shake{animation:shake 0.3s;}
+
+.aesthetic{
+font-family:Georgia,serif;
+line-height:1.8;
+animation:fadeIn 2s ease forwards;
+opacity:0;
+}
+
+@keyframes fadeIn{
+to{opacity:1;}
+}
+
+/* ENDING */
+#endingPhoto{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:white;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+#endingPhoto img{
+width:100%;
+height:80%;
+object-fit:cover;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD -->
+<section id="passwordPage">
+<h2>Masukin Password Dulu 💌</h2>
+<input type="password" id="passwordInput">
+<button onclick="checkPassword()">Masuk</button>
+<p onclick="showClue()" style="cursor:pointer;">Clue? 🤭</p>
+<p id="clueText"></p>
+</section>
+
+<!-- LOADING -->
+<section id="loadingPage">
+<h2>Loading Cinta... 💛</h2>
+<button onclick="startLoading()">Mulai 💛</button>
+<div id="loadingBar"><div id="progress"></div></div>
+</section>
+
+<!-- GAME -->
+<section id="gamePage">
+<h2>Klik muka Safna 15x 😆</h2>
+<p>Score: <span id="score">0</span> / 15</p>
+<img id="finalHeart" src="safna.jpg">
+</section>
+
+<!-- CAKE -->
+<section id="cakePage">
+<h2>Tiup Lilinnya 🎂</h2>
+<h1 id="candle">🕯️</h1>
+
+<div id="finalMessage" class="aesthetic" style="display:none;">
+Selamat ulang tahun ya, Safna 🤍<br><br>
+Semoga semua doa baik yang kamu simpan diam-diam satu per satu jadi nyata.<br><br>
+Semoga kamu selalu dikelilingi hal-hal yang bikin kamu senyum…<br>
+dan semoga aku selalu jadi salah satu alasannya 😌✨<br><br>
+<button onclick="showEnding()">Lihat Ending 🤍</button>
+</div>
+</section>
+
+<div id="endingPhoto">
+<img src="kita.jpg">
+<h1>Kita 🤍</h1>
+</div>
+
+<audio id="ehSound" src="https://www.myinstants.com/media/sounds/anime-wow-sound-effect.mp3"></audio>
+
+<script>
+let progress=0;
+let score=0;
+let target=15;
+
+/* PASSWORD */
+function checkPassword(){
+if(document.getElementById("passwordInput").value==="123"){
+document.getElementById("passwordPage").style.display="none";
+document.getElementById("loadingPage").style.display="flex";
+}else{
+alert("Salah 😜");
+}
+}
+
+function showClue(){
+document.getElementById("clueText").innerText="Clue: gabungan Sayang + Fikri 😉";
+}
+
+/* LOADING */
+function startLoading(){
+let interval=setInterval(()=>{
+if(progress<100){
+progress+=2;
+document.getElementById("progress").style.width=progress+"%";
+}else{
+clearInterval(interval);
+document.getElementById("loadingPage").style.display="none";
+document.getElementById("gamePage").style.display="flex";
+}
+},100);
+}
+
+/* GAME */
+const heart=document.getElementById("finalHeart");
+const gamePage=document.getElementById("gamePage");
+const ehSound=document.getElementById("ehSound");
+
+heart.addEventListener("click",function(){
+
+score++;
+document.getElementById("score").innerText=score;
+
+ehSound.currentTime=0;
+ehSound.play().catch(()=>{});
+
+heart.classList.add("shake");
+setTimeout(()=>heart.classList.remove("shake"),300);
+
+let areaWidth=gamePage.clientWidth;
+let areaHeight=gamePage.clientHeight;
+let size=heart.offsetWidth;
+
+let x=Math.random()*(areaWidth-size);
+let y=Math.random()*(areaHeight-size);
+
+heart.style.left=x+"px";
+heart.style.top=y+"px";
+
+if(score>=target){
+gamePage.style.display="none";
+document.getElementById("cakePage").style.display="flex";
+startMic();
+}
+});
+
+/* MIC */
+function startMic(){
+navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+const audioContext=new AudioContext();
+const analyser=audioContext.createAnalyser();
+const mic=audioContext.createMediaStreamSource(stream);
+mic.connect(analyser);
+const data=new Uint8Array(analyser.frequencyBinCount);
+
+function detect(){
+analyser.getByteFrequencyData(data);
+let volume=data.reduce((a,b)=>a+b)/data.length;
+if(volume>50){
+document.getElementById("candle").innerText="💨";
+document.getElementById("finalMessage").style.display="block";
+}
+requestAnimationFrame(detect);
+}
+detect();
+});
+}
+
+/* ENDING */
+function showEnding(){
+document.getElementById("endingPhoto").style.display="flex";
+}
+</script>
+
+</body>
+</html>
