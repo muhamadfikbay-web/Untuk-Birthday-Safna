@@ -127,14 +127,6 @@ display:none;
 font-weight:bold;
 z-index:20;
 }
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-pointer-events:none;
-z-index:0;
-}
 </style>
 </head>
 <body>
@@ -165,9 +157,8 @@ z-index:0;
 <h2>Tiup Lilinnya 🎂</h2>
 <h1 id="candle">🕯️</h1>
 <div id="finalMessage" class="aesthetic" style="display:none;">
-Happy birthday yaaa Safnaaa 🎂✨ 🤍<br><br>
-Semoga makin bahagia, makin banyak hal baik dateng ke kamu, dan makin sering senyum (apalagi kalau gara-gara aku 😌).<br>
-Makasih ya udah jadi orang yang bikin hari-hari jadi nggak biasa.
+Happy birthday Safna 🤍✨<br><br>
+Semoga semua hal baik datang ke kamu, dan semoga aku selalu jadi bagian dari senyum kamu 😌
 </div>
 </section>
 
@@ -184,13 +175,12 @@ Makasih ya udah jadi orang yang bikin hari-hari jadi nggak biasa.
 </div>
 
 <div id="toastMsg"></div>
-<canvas id="confetti"></canvas>
 
 <script>
 let progress=0,score=0,target=15;
 let normalInterval,quizIndex=0;
 
-/* MUSIC */
+/* MUSIC AUTOPLAY FIX */
 const music=document.getElementById("romanticMusic");
 document.addEventListener("touchstart",()=>{
 music.volume=0.4;
@@ -209,74 +199,61 @@ function showClue(){
 clueText.innerText="Clue: Kata yg sering Kak Fikri ucapin 😉";
 }
 
-/* LOADING */
+/* LOADING SENSOR FIX IPHONE */
 function startLoading(){
+
+if (typeof DeviceOrientationEvent !== "undefined" &&
+typeof DeviceOrientationEvent.requestPermission === "function") {
+
+DeviceOrientationEvent.requestPermission()
+.then(response=>{
+if(response==="granted"){
+initLoading();
+}
+})
+.catch(console.error);
+
+} else {
+initLoading();
+}
+}
+
+function initLoading(){
 progress=0;
 updateProgress();
-normalInterval=setInterval(()=>{progress+=1;updateProgress();},120);
+
+normalInterval=setInterval(()=>{
+progress+=1;
+updateProgress();
+},120);
 
 window.addEventListener("deviceorientation",(e)=>{
 let tilt=e.gamma;
-if(tilt>15)progress+=3;
-if(tilt<-15)progress-=3;
+if(tilt>15) progress+=3;
+if(tilt<-15) progress-=3;
 });
 }
 
 function updateProgress(){
-if(progress<0)progress=0;
-if(progress>100)progress=100;
-progress=document.getElementById("progress").style.width=progress+"%";
+if(progress<0) progress=0;
+if(progress>100) progress=100;
+
+document.getElementById("progress").style.width = progress + "%";
 
 if(progress>=100){
 clearInterval(normalInterval);
-launchConfetti();
 setTimeout(()=>{
 loadingPage.style.display="none";
 gamePage.style.display="flex";
-},3000);
+},1000);
 }
-}
-
-/* CONFETTI */
-function launchConfetti(){
-let canvas=document.getElementById("confetti");
-let ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let pieces=[];
-for(let i=0;i<100;i++){
-pieces.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*6+3,
-speed:Math.random()*3+2
-});
-}
-
-let anim;
-function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#ff4d6d";
-pieces.forEach(p=>{
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-ctx.fill();
-p.y+=p.speed;
-});
-anim=requestAnimationFrame(draw);
-}
-draw();
-setTimeout(()=>{
-cancelAnimationFrame(anim);
-ctx.clearRect(0,0,canvas.width,canvas.height);
-},3000);
 }
 
 /* GAME */
 finalHeart.onclick=function(){
 score++;
 document.getElementById("score").innerText=score;
+
 let w=gamePage.clientWidth;
 let h=gamePage.clientHeight;
 finalHeart.style.left=Math.random()*(w-100)+"px";
@@ -289,10 +266,11 @@ startMic();
 }
 }
 
-/* MIC */
+/* MIC FIX IPHONE */
 function startMic(){
-navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-const audioContext=new AudioContext();
+navigator.mediaDevices.getUserMedia({audio:true})
+.then(stream=>{
+const audioContext=new (window.AudioContext||window.webkitAudioContext)();
 const analyser=audioContext.createAnalyser();
 const mic=audioContext.createMediaStreamSource(stream);
 mic.connect(analyser);
@@ -301,6 +279,7 @@ const data=new Uint8Array(analyser.frequencyBinCount);
 function detect(){
 analyser.getByteFrequencyData(data);
 let volume=data.reduce((a,b)=>a+b)/data.length;
+
 if(volume>25){
 candle.innerText="💨";
 finalMessage.style.display="block";
@@ -310,14 +289,15 @@ return;
 requestAnimationFrame(detect);
 }
 detect();
-});
+})
+.catch(()=>alert("Izinkan mic yaa 😜"));
 }
 
 /* QUIZ */
 const quizData=[
 {q:"1. Siapa paling sayang Safna?",o:["A. Kak Fikri","B. Kak Fikri dong","C. Kak Fikri banget","D. Semua benar"]},
 {q:"2. Siapa paling ganteng?",o:["A. Zayn Malik","B. Masimo","C. Kak Fikri","D. Semua benar"]},
-{q:"3. Yang paling Safna sayang itu siapa sih? 🤨",o:["A. Kak Fikri","B. Kak Fikri (serius)","C. Kak Fikri (jujur)","D. Tetep Kak Fikri"]}
+{q:"3. Yang paling Safna sayang itu siapa? 🤨",o:["A. Kak Fikri","B. Kak Fikri (serius)","C. Kak Fikri (jujur)","D. Tetep Kak Fikri"]}
 ];
 
 function startQuiz(){
@@ -340,7 +320,7 @@ quizData[quizIndex].o.forEach((opt,i)=>{
 let btn=document.createElement("button");
 btn.innerText=opt;
 
-/* Tombol A & B kabur di soal no 2 */
+/* Tombol kabur di soal no 2 */
 if(quizIndex===1 && (i===0 || i===1)){
 btn.onmouseover=kabur;
 btn.ontouchstart=kabur;
